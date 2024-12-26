@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "villagerunknown-flatulenceupdate",
+  "version": "${version}",
+  "name": "VillagerUnknown's Flatulence Update",
+  "description": "Hrm.. Players and Mobs now have the ability to pass gas.",
+  "authors": ["VillagerUnknown"],
+  "contact": {
+    "homepage":"https://discord.gg/PXjXh6M38H"
+  },
+  "license": "CC-BY-4.0",
+  "icon": "assets/flatulenceupdate/villagerunknown-flatulence-update.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "me.villagerunknown.flatulenceupdate.client.FlatulenceupdateClient"
+    ],
+    "main": [
+      "me.villagerunknown.flatulenceupdate.Flatulenceupdate"
+    ],
+    "modmenu": [
+      "me.villagerunknown.flatulenceupdate.client.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "flatulenceupdate.mixins.json",
+    {
+      "config": "flatulenceupdate.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}",
+    "villagerunknown-platform": ">=1.1.0"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/PXjXh6M38H"
+      }
+    }
+  }
+}

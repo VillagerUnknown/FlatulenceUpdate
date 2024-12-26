@@ -1,0 +1,34 @@
+{
+  "text.autoconfig.villagerunknown-flatulenceupdate.title": "VillagerUnknown's Flatulence Update",
+
+  "text.autoconfig.villagerunknown-flatulenceupdate.category.General": "General",
+
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.enableFlatulence": "Enable Flatulence",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlatulence": "Chance for Flatulence",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlatulenceWhileSleeping": "Chance for Flatulence while Sleeping",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlatulenceOnDamage": "Chance for Flatulence on Damage",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlatulenceOnDeath": "Chance for Flatulence on Death",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlatulenceOnRespawn": "Chance for Flatulence on Respawn",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlammableFlatulence": "Chance for Flammable Flatulence",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForExplosiveFlatulence": "Chance for Explosive Flatulence",
+
+  "text.autoconfig.villagerunknown-flatulenceupdate.category.Effects": "Effects",
+
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForEffect": "Chance for Effect",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForHarmfulEffect": "Chance for Harmful Effect",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.maxAfflictionRange": "Max Affliction Range",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.minStatusEffectDuration": "Min Status Effect Duration",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.maxStatusEffectDuration": "Max Status Effect Duration",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.maxStatusEffectLevel": "Max Status Effect Level",
+
+  "text.autoconfig.villagerunknown-flatulenceupdate.category.Explosions": "Explosions",
+
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.minExplosivePower": "Min Explosive Power",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.maxExplosivePower": "Max Explosive Power",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.allowExplosionsToBreakBlocks": "Allow Explosions to Break Blocks",
+
+  "sound.villagerunknown-flatulenceupdate.flatulence": "Flatulence",
+
+  "stat.villagerunknown-flatulenceupdate.total_flatulence": "Released Flatulence",
+  "stat.villagerunknown-flatulenceupdate.total_explosive_flatulence": "Exploded Flatulence"
+}

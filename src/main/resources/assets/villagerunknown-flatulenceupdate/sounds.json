@@ -1,0 +1,31 @@
+{
+  "flatulence": {
+    "subtitle": "sound.villagerunknown-flatulenceupdate.flatulence",
+    "sounds": [
+      {
+        "name": "villagerunknown-flatulenceupdate:fart-short-mike-koenig",
+        "stream": true
+      },
+      {
+        "name": "villagerunknown-flatulenceupdate:fart-quick-mike-koenig",
+        "stream": true
+      },
+      {
+        "name": "villagerunknown-flatulenceupdate:fart-common-mike-koenig",
+        "stream": true
+      },
+      {
+        "name": "villagerunknown-flatulenceupdate:fart-rigid-mike-koenig",
+        "stream": true
+      },
+      {
+        "name": "villagerunknown-flatulenceupdate:fart-oops-mike-koenig",
+        "stream": true
+      },
+      {
+        "name": "villagerunknown-flatulenceupdate:fart-trumpet-mike-koenig",
+        "stream": true
+      }
+    ]
+  }
+}
