@@ -32,27 +32,10 @@ Players and Mobs now have the chance to pass gas.
 
 Defaults are intended to allow the mod to be installed into any modpack or world without it being destructive by default. Use the recommended settings for a more destructive and hilarious experience.
 
-## Hm hrm hm! (Version Notes)
+## Support
 
-**v1.1.1**
-
-* Reworked code for Platform changes.
-* Fixed bug preventing flatulence in the nether from using flame particles.
-* Changed license from All Rights Reserved to CC 4.0.
-
-**v1.1.0**
-
-* Added particle effects to flatulence.
-* Added status effects to flatulence.
-* Added additional options for specific control over the chance of flatulence.
-* Added flatulence to players.
-
-**v1.0.0**
-
-* Initial release.
-
-## Hm hrm! (Support)
-
-Join VillagerUnknown's Discord Server for support at [https://discord.gg/PXjXh6M38H](https://discord.gg/PXjXh6M38H)
+- Get support and share feedback at https://discord.gg/PXjXh6M38H
+- Request features and report bugs at https://github.com/VillagerUnknown/FlatulenceUpdate/issues
+- View the changelog at https://github.com/VillagerUnknown/FlatulenceUpdate/blob/main/CHANGELOG.md
 
 _Sound Credits: Mike Koenig made accessible through soundbible.com and the Attribution 3.0 license. Modifications were made to the sound files to remove empty space._
