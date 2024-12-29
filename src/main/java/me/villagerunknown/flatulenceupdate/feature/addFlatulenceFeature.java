@@ -81,7 +81,7 @@ public class addFlatulenceFeature {
 				executeFlatulence( playerEntity );
 			} // if
 			
-			return null;
+			return TypedActionResult.pass(null);
 		});
 	}
 	
