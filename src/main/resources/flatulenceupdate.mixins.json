@@ -4,6 +4,7 @@
   "package": "me.villagerunknown.flatulenceupdate.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "EntityMixin",
     "PlayerEntityMixin"
   ],
   "injectors": {
