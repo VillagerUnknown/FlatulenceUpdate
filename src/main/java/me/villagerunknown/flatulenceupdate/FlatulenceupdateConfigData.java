@@ -23,6 +23,9 @@ public class FlatulenceupdateConfigData implements me.shedaniel.autoconfig.Confi
 	public float chanceForFlatulenceOnItemUse = 0.05F;
 	
 	@ConfigEntry.Category("General")
+	public float chanceForFlatulenceOnPoseChange = 0.05F;
+	
+	@ConfigEntry.Category("General")
 	public float chanceForFlatulenceOnDamage = 0.05F;
 	
 	@ConfigEntry.Category("General")
