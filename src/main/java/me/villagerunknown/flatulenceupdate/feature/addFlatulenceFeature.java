@@ -5,6 +5,7 @@ import me.villagerunknown.platform.util.*;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.AreaEffectCloudEntity;
@@ -12,6 +13,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SimpleParticleType;
@@ -22,8 +25,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.StatFormatter;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +44,7 @@ public class addFlatulenceFeature {
 	
 	public static void execute() {
 		registerFlatulence();
+		registerFlatulenceOnItemUse();
 		registerFlatulenceOnDamage();
 		registerFlatulenceOnDeath();
 		registerFlatulenceOnRespawn();
@@ -65,6 +72,16 @@ public class addFlatulenceFeature {
 					} // if, else
 				} // for
 			} // for
+		});
+	}
+	
+	private static void registerFlatulenceOnItemUse() {
+		UseItemCallback.EVENT.register((playerEntity, world, hand) -> {
+			if( MathUtil.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulenceOnItemUse) ) {
+				executeFlatulence( playerEntity );
+			} // if
+			
+			return null;
 		});
 	}
 	
