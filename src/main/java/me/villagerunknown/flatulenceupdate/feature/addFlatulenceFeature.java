@@ -116,7 +116,11 @@ public class addFlatulenceFeature {
 		});
 	}
 	
-	private static void executeFlatulence(Entity entity) {
+	public static void executeFlatulence(Entity entity) {
+		if( entity.getWorld().isClient() ){
+			return;
+		}
+		
 		if( Flatulenceupdate.CONFIG.enableFlatulence && !entity.isSpectator() ) {
 			List<Block> nearbyBlocks = EntityUtil.getNearbyBlocks( entity, 2 );
 			
