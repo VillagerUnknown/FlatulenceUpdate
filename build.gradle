@@ -54,7 +54,7 @@ dependencies {
     modImplementation "com.terraformersmc:modmenu:11.0.3"
 
     // VillagerUnknown's Platform
-    modImplementation files("libs/villagerunknown-platform-1.1.0.jar")
+    modImplementation files("libs/villagerunknown-platform-1.1.1.jar")
 }
 
 processResources {

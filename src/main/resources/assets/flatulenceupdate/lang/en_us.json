@@ -7,6 +7,8 @@
   "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlatulence": "Chance for Flatulence",
   "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlatulenceWhileSleeping": "Chance for Flatulence while Sleeping",
   "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlatulenceOnDamage": "Chance for Flatulence on Damage",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlatulenceOnItemUse": "Chance for Flatulence on Item Use",
+  "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlatulenceOnPoseChange": "Chance for Flatulence on Pose Change",
   "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlatulenceOnDeath": "Chance for Flatulence on Death",
   "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlatulenceOnRespawn": "Chance for Flatulence on Respawn",
   "text.autoconfig.villagerunknown-flatulenceupdate.option.chanceForFlammableFlatulence": "Chance for Flammable Flatulence",

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2]
+
+### Added
+
+- Added option for chance of flatulence on item use.
+- Added option for chance of flatulence on pose change.
+
 ## [1.1.1]
 
 ### Changed
