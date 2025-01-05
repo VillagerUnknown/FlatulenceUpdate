@@ -1,6 +1,6 @@
 # VillagerUnknown's Flatulence Update
 
-Players and Mobs now have the chance to pass gas.
+Adds customizable flatulence to Players and Mobs.
 
 **Features:**
 
