@@ -14,14 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin {
 	
-	@Inject(method = "jump", at = @At("RETURN"))
-	public void jump(CallbackInfo ci) {
-		if( MathUtil.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulenceOnPoseChange) ) {
-			Entity entity = (Entity) (Object) this;
-			addFlatulenceFeature.executeFlatulence( entity );
-		} // if
-	}
-	
 	@Inject(method = "useRiptide", at = @At("RETURN"))
 	public void useRiptide(int riptideTicks, float riptideAttackDamage, ItemStack stack, CallbackInfo ci) {
 		if( MathUtil.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulenceOnPoseChange) ) {

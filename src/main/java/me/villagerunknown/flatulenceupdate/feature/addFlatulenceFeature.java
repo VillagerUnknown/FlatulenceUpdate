@@ -28,7 +28,7 @@ import net.minecraft.stat.StatFormatter;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class addFlatulenceFeature {
 				executeFlatulence( playerEntity );
 			} // if
 			
-			return TypedActionResult.pass(null);
+			return ActionResult.PASS;
 		});
 	}
 	
