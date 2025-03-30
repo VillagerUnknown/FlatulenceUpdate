@@ -6,7 +6,7 @@
   "description": "Players and Mobs now have the ability to pass gas.",
   "authors": ["VillagerUnknown"],
   "contact": {
-    "homepage":"https://modrinth.com/mod/villagerunknowns-flatuenceupdate",
+    "homepage":"https://github.com/VillagerUnknown",
     "sources": "https://github.com/VillagerUnknown/FlatulenceUpdate",
     "issues": "https://github.com/VillagerUnknown/FlatulenceUpdate/issues"
   },
@@ -35,6 +35,6 @@
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
     "minecraft": "${minecraft_version}",
-    "villagerunknown-platform": ">=1.2.0+1.21.4"
+    "villagerunknown-platform": ">=1.2.0+1.21.5"
   }
 }

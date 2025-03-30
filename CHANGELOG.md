@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.1.2+1.21.4
+## [1.1.2+1.21.5]
+
+### Changed
+
+- Changed supported Minecraft version to 1.21.5.
+
+## [1.1.2+1.21.4]
 
 ### Changed
 
