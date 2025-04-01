@@ -32,6 +32,9 @@ public class Flatulenceupdate implements ModInitializer {
 		
 		// # Activate Features
 		featureManager.addFeature( "addFlatulence", addFlatulenceFeature::execute );
+		
+		// # Load Features
+		featureManager.loadFeatures();
 	}
 	
 }
