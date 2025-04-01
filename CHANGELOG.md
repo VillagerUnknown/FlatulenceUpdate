@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.3+1.21.5]
+
+### Changed
+
+- Changed supported Platform version.
+
 ## [1.1.2+1.21.5]
 
 ### Changed
