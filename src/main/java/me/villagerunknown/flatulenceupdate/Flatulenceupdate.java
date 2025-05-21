@@ -9,29 +9,22 @@ import org.slf4j.Logger;
 
 public class Flatulenceupdate implements ModInitializer {
 	
-	public static PlatformMod<FlatulenceupdateConfigData> MOD = null;
-	public static String MOD_ID = null;
-	public static Logger LOGGER = null;
-	public static FlatulenceupdateConfigData CONFIG = null;
+	public static PlatformMod<FlatulenceupdateConfigData> MOD = Platform.register( "flatulenceupdate", Flatulenceupdate.class, FlatulenceupdateConfigData.class );
+	public static String MOD_ID = MOD.getModId();
+	public static Logger LOGGER = MOD.getLogger();
+	public static FlatulenceupdateConfigData CONFIG = MOD.getConfig();
 	
 	@Override
 	public void onInitialize() {
 		// # Register Mod w/ Platform
-		MOD = Platform.register( "flatulenceupdate", Flatulenceupdate.class, FlatulenceupdateConfigData.class );
-		
-		MOD_ID = MOD.getModId();
-		LOGGER = MOD.getLogger();
-		CONFIG = MOD.getConfig();
-		
-		// # Initialize Mod
-		init();
-	}
-	
-	private static void init() {
 		Platform.init_mod( MOD );
 		
 		// # Activate Features
-		featureManager.addFeature( "addFlatulence", addFlatulenceFeature::execute );
+		featureManager.addFeature( "add-flatulence", addFlatulenceFeature::execute );
+		
+		// # Load Features
+		featureManager.loadFeatures();
 	}
+	
 	
 }
