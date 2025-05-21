@@ -34,7 +34,6 @@ Defaults are intended to allow the mod to be installed into any modpack or world
 
 ## Support
 
-- Get support and share feedback at https://discord.gg/PXjXh6M38H
 - Request features and report bugs at https://github.com/VillagerUnknown/FlatulenceUpdate/issues
 - View the changelog at https://github.com/VillagerUnknown/FlatulenceUpdate/blob/main/CHANGELOG.md
 
