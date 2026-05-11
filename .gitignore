@@ -11,8 +11,18 @@ run/
 # Gradle
 .gradle/
 
+# Local libs (no longer used; dependencies resolved via Maven)
+libs/
+
 # Idea
 .idea/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
 
 # Gradle and Maven with auto-import
 # When using Gradle or Maven with auto-import, you should exclude module files,

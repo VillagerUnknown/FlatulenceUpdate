@@ -1,265 +1,348 @@
 package me.villagerunknown.flatulenceupdate.feature;
 
 import me.villagerunknown.flatulenceupdate.Flatulenceupdate;
-import me.villagerunknown.platform.util.*;
+import me.villagerunknown.flatulenceupdate.util.ModRandom;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.AreaEffectCloudEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.particle.SimpleParticleType;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.stat.StatFormatter;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.TypeFilter;
-import net.minecraft.util.ActionResult;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.attribute.EnvironmentAttributes;
+import net.minecraft.world.entity.AreaEffectCloud;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class addFlatulenceFeature {
-	
-	public static final SoundEvent ENTITY_FLATULENCE = RegistryUtil.registerSound( "flatulence", Flatulenceupdate.MOD_ID );
-	
-	public static final Identifier TOTAL_FLATULENCE_ID = RegistryUtil.registerStat( "total_flatulence", Flatulenceupdate.MOD_ID, StatFormatter.DEFAULT );
-	public static final Identifier TOTAL_EXPLOSIVE_FLATULENCE_ID = RegistryUtil.registerStat( "total_explosive_flatulence", Flatulenceupdate.MOD_ID, StatFormatter.DEFAULT );
-	
-	public static void execute() {
-		registerFlatulence();
-		registerFlatulenceOnItemUse();
-		registerFlatulenceOnDamage();
-		registerFlatulenceOnDeath();
-		registerFlatulenceOnRespawn();
-	}
-	
-	private static void registerFlatulence() {
-		// # Ambient Flatulence
-		ServerTickEvents.START_SERVER_TICK.register( (MinecraftServer server) -> {
-			for (ServerWorld world : server.getWorlds()) {
-				if( world.isClient() ) {
-					continue;
-				}
-				
-				List<LivingEntity> entities = WorldUtil.getEntitiesByType( world, LivingEntity.class );
-				
-				for (LivingEntity entity : entities) {
-					if( entity.isSleeping() ) {
-						if( MathUtil.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulenceWhileSleeping) ) {
-							executeFlatulence( entity );
-						} // if
-					} else if( entity.isAlive() ) {
-						if( MathUtil.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulence) ) {
-							executeFlatulence( entity );
-						} // if
-					} // if, else
-				} // for
-			} // for
-		});
-	}
-	
-	private static void registerFlatulenceOnItemUse() {
-		UseItemCallback.EVENT.register((playerEntity, world, hand) -> {
-			if( MathUtil.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulenceOnItemUse) ) {
-				executeFlatulence( playerEntity );
-			} // if
-			
-			return ActionResult.PASS;
-		});
-	}
-	
-	private static void registerFlatulenceOnDamage() {
-		// # On Damage
-		ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, damageSource, amount) -> {
-			if( MathUtil.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulenceOnDamage) ) {
-				executeFlatulence( entity );
-			} // if
-			
-			return true;
-		});
-	}
-	
-	private static void registerFlatulenceOnDeath() {
-		// # On Death
-		ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, amount) -> {
-			if( MathUtil.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulenceOnDeath) ) {
-				executeFlatulence( entity );
-			} // if
-			
-			return true;
-		});
-	}
-	
-	private static void registerFlatulenceOnRespawn() {
-		// # After Respawn
-		ServerPlayerEvents.AFTER_RESPAWN.register((entity, damageSource, amount) -> {
-			if( MathUtil.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulenceOnRespawn) ) {
-				executeFlatulence( entity );
-			} // if
-		});
-	}
-	
-	public static void executeFlatulence(Entity entity) {
-		if( entity.getWorld().isClient() ){
-			return;
-		}
-		
-		if( Flatulenceupdate.CONFIG.enableFlatulence && !entity.isSpectator() ) {
-			List<Block> nearbyBlocks = EntityUtil.getNearbyBlocks( entity, 2 );
-			
-			if( entity.isPlayer() ) {
-				ServerPlayerEntity player = (ServerPlayerEntity) entity;
-				player.incrementStat( addFlatulenceFeature.TOTAL_FLATULENCE_ID );
-			} // if
-			
-			playSound(entity);
-			spawnParticles(entity,nearbyBlocks);
-			applyEffects(entity,nearbyBlocks);
-			causeExplosion(entity);
-		} // if
-	}
-	
-	private static void playSound(Entity entity) {
-		float volume = MathUtil.getRandomWithinRange( 0F, 0.75F );
-		float pitch = MathUtil.getRandomWithinRange( 0F, 2.0F );
-		
-		EntityUtil.playSound( entity, ENTITY_FLATULENCE, SoundCategory.MASTER, volume, pitch, false );
-	}
-	
-	private static void spawnParticles(Entity entity, List<Block> nearbyBlocks) {
-		int count = 1;
-		float speed = 0.005F;
-		SimpleParticleType particle = ParticleTypes.CAMPFIRE_COSY_SMOKE;
-		
-		// End
-		if( entity.getWorld().getRegistryKey().equals(ServerWorld.END ) ) {
-			count = 32;
-			speed = 0.005F;
-			particle = ParticleTypes.PORTAL;
-		} // if
-		
-		// Flames
-		if( PositionUtil.isNearFlameSource( nearbyBlocks ) || entity.getWorld().getDimension().ultrawarm() ) {
-			count = 6;
-			speed = 0.005F;
-			if( Flatulenceupdate.CONFIG.chanceForFlammableFlatulence > 0 && MathUtil.hasChance(Flatulenceupdate.CONFIG.chanceForFlammableFlatulence) ) {
-				particle = ParticleTypes.FLAME;
-				entity.setOnFireFor( 3 );
-			} else {
-				particle = ParticleTypes.SMALL_FLAME;
-			} // if
-		} // if
-		
-		// Soul Flames
-		if( nearbyBlocks.contains( Blocks.SOUL_CAMPFIRE )
-				|| nearbyBlocks.contains( Blocks.SOUL_FIRE )
-				|| nearbyBlocks.contains( Blocks.SOUL_TORCH )
-				|| nearbyBlocks.contains( Blocks.SOUL_WALL_TORCH )
-		) {
-			count = 6;
-			speed = 0.005F;
-			particle = ParticleTypes.SOUL_FIRE_FLAME;
-			if( Flatulenceupdate.CONFIG.chanceForFlammableFlatulence > 0 && MathUtil.hasChance( Flatulenceupdate.CONFIG.chanceForFlammableFlatulence ) ) {
-				entity.setOnFireFor( 3 );
-			} // if
-		} // if
-		
-		// Bubbles
-		if( entity.isSubmergedInWater() ) {
-			count = 9;
-			speed = 0.005F;
-			particle = ParticleTypes.BUBBLE;
-		} // if
-		
-		EntityUtil.spawnParticles( entity, getHeightAdjustment(entity), particle, count, 0.1, 0.1, 0.1, speed );
-	}
-	
-	private static void applyEffects( Entity entity, List<Block> nearbyBlocks ) {
-		if( Flatulenceupdate.CONFIG.chanceForEffect > 0 && MathUtil.hasChance( Flatulenceupdate.CONFIG.chanceForEffect ) ) {
-			int range = (int) MathUtil.getRandomWithinRange(1,Flatulenceupdate.CONFIG.maxAfflictionRange);
-			int duration = (int) MathUtil.getRandomWithinRange(Flatulenceupdate.CONFIG.minStatusEffectDuration,Flatulenceupdate.CONFIG.maxStatusEffectDuration);
-			int level = (int) MathUtil.getRandomWithinRange(1,Flatulenceupdate.CONFIG.maxStatusEffectLevel);
-			float heightAdjustment = getHeightAdjustment(entity);
-			
-			List<RegistryEntry> statusEffects = new ArrayList<>();
-			statusEffects.add(StatusEffects.NAUSEA);
-			statusEffects.add(StatusEffects.WEAKNESS);
-			statusEffects.add(StatusEffects.BLINDNESS);
-			statusEffects.add(StatusEffects.HUNGER);
-			statusEffects.add(StatusEffects.RESISTANCE);
-			statusEffects.add(StatusEffects.ABSORPTION);
-			
-			if( Flatulenceupdate.CONFIG.chanceForHarmfulEffect > 0 && MathUtil.hasChance( Flatulenceupdate.CONFIG.chanceForHarmfulEffect ) ) {
-				statusEffects.add(StatusEffects.INSTANT_DAMAGE);
-				statusEffects.add(StatusEffects.WITHER);
-				statusEffects.add(StatusEffects.POISON);
-			} // if
-			
-			RegistryEntry selectedStatusEffect = statusEffects.get( ThreadLocalRandom.current().nextInt(statusEffects.size()) );
-			
-			AreaEffectCloudEntity cloudEntity = new AreaEffectCloudEntity(entity.getEntityWorld(),entity.getX(),entity.getY() + heightAdjustment, entity.getZ());
-			StatusEffectInstance effectInstance = new StatusEffectInstance(selectedStatusEffect, Flatulenceupdate.CONFIG.minStatusEffectDuration, level );
-			
-			cloudEntity.addEffect(effectInstance);
-			cloudEntity.setDuration(duration);
-			cloudEntity.setOwner((LivingEntity) entity);
-			cloudEntity.setRadius(range);
-			cloudEntity.setOnGround(false);
-			
-			ParticleEffect particleEffect = ParticleTypes.CAMPFIRE_COSY_SMOKE;
-			if( entity.isSubmergedInWater() ) {
-				particleEffect = ParticleTypes.BUBBLE;
-				cloudEntity.setRadiusGrowth(0.0075F);
-				cloudEntity.setNoGravity(true);
-			} else if( PositionUtil.isNearFlameSource( nearbyBlocks ) || entity.getEntityWorld().getDimension().ultrawarm() ) {
-				particleEffect = ParticleTypes.SMALL_FLAME;
-				cloudEntity.setNoGravity(true);
-			} else if( !entity.getEntityWorld().getDimension().hasCeiling() && !entity.getEntityWorld().getDimension().bedWorks() ) {
-				particleEffect = ParticleTypes.PORTAL;
-				cloudEntity.setRadiusGrowth(0.0075F);
-				cloudEntity.setNoGravity(false);
-			} else {
-				cloudEntity.setRadiusGrowth(0F);
-				cloudEntity.setNoGravity(false);
-			} // if, else
-			
-			cloudEntity.setParticleType(particleEffect);
-			entity.getEntityWorld().spawnEntity( cloudEntity );
-			
-		} // if
-	}
-	
-	private static void causeExplosion( Entity entity ) {
-		if( Flatulenceupdate.CONFIG.chanceForExplosiveFlatulence > 0 && MathUtil.hasChance( Flatulenceupdate.CONFIG.chanceForExplosiveFlatulence ) ) {
-			if( entity.isPlayer() ) {
-				ServerPlayerEntity player = (ServerPlayerEntity) entity;
-				player.incrementStat( addFlatulenceFeature.TOTAL_EXPLOSIVE_FLATULENCE_ID );
-			} // if
-			
-			float power = MathUtil.getRandomWithinRange( Flatulenceupdate.CONFIG.minExplosivePower, Flatulenceupdate.CONFIG.maxExplosivePower );
-			EntityUtil.causeExplosion( entity.getEntityWorld(), entity, power, true, Flatulenceupdate.CONFIG.allowExplosionsToBreakBlocks );
-		} // if
-	}
-	
-	private static float getHeightAdjustment( Entity entity ) {
-		return entity.getStandingEyeHeight() * 0.5F;
-	}
-	
+public final class AddFlatulenceFeature {
+
+    private static final List<Block> FLAME_SOURCE_BLOCKS = List.of(
+            Blocks.TORCH, Blocks.WALL_TORCH,
+            Blocks.FIRE, Blocks.SOUL_FIRE,
+            Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE,
+            Blocks.LANTERN, Blocks.SOUL_LANTERN,
+            Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH,
+            Blocks.JACK_O_LANTERN, Blocks.MAGMA_BLOCK,
+            Blocks.LAVA, Blocks.LAVA_CAULDRON,
+            Blocks.FURNACE, Blocks.SMOKER, Blocks.BLAST_FURNACE,
+            Blocks.REDSTONE_TORCH, Blocks.REDSTONE_WALL_TORCH
+    );
+
+    public static final SoundEvent ENTITY_FLATULENCE = registerSound("flatulence");
+
+    public static final Identifier TOTAL_FLATULENCE_ID =
+            registerStat("total_flatulence");
+    public static final Identifier TOTAL_EXPLOSIVE_FLATULENCE_ID =
+            registerStat("total_explosive_flatulence");
+
+    private AddFlatulenceFeature() {}
+
+    public static void execute() {
+        registerAmbientFlatulence();
+        registerFlatulenceOnItemUse();
+        registerFlatulenceOnDamage();
+        registerFlatulenceOnDeath();
+        registerFlatulenceOnRespawn();
+    }
+
+    private static SoundEvent registerSound(String name) {
+        Identifier id = Identifier.fromNamespaceAndPath(Flatulenceupdate.MOD_ID, name);
+        SoundEvent event = SoundEvent.createVariableRangeEvent(id);
+        return Registry.register(BuiltInRegistries.SOUND_EVENT, id, event);
+    }
+
+    private static Identifier registerStat(String name) {
+        Identifier id = Identifier.fromNamespaceAndPath(Flatulenceupdate.MOD_ID, name);
+        Registry.register(BuiltInRegistries.CUSTOM_STAT, id, id);
+        Stats.CUSTOM.get(id, net.minecraft.stats.StatFormatter.DEFAULT);
+        return id;
+    }
+
+    private static void registerAmbientFlatulence() {
+        ServerTickEvents.START_SERVER_TICK.register(server -> {
+            for (ServerLevel level : server.getAllLevels()) {
+                for (LivingEntity entity : getLivingEntities(level)) {
+                    if (entity.isSleeping()) {
+                        if (ModRandom.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulenceWhileSleeping)) {
+                            executeFlatulence(entity);
+                        }
+                    } else if (entity.isAlive()) {
+                        if (ModRandom.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulence)) {
+                            executeFlatulence(entity);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private static void registerFlatulenceOnItemUse() {
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+            if (ModRandom.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulenceOnItemUse)) {
+                executeFlatulence(player);
+            }
+            return InteractionResult.PASS;
+        });
+    }
+
+    private static void registerFlatulenceOnDamage() {
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, damageSource, amount) -> {
+            if (ModRandom.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulenceOnDamage)) {
+                executeFlatulence(entity);
+            }
+            return true;
+        });
+    }
+
+    private static void registerFlatulenceOnDeath() {
+        ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, amount) -> {
+            if (ModRandom.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulenceOnDeath)) {
+                executeFlatulence(entity);
+            }
+            return true;
+        });
+    }
+
+    private static void registerFlatulenceOnRespawn() {
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            if (ModRandom.hasChance(Flatulenceupdate.CONFIG.chanceForFlatulenceOnRespawn)) {
+                executeFlatulence(newPlayer);
+            }
+        });
+    }
+
+    public static void executeFlatulence(Entity entity) {
+        if (entity.level().isClientSide()) {
+            return;
+        }
+        if (!Flatulenceupdate.CONFIG.enableFlatulence || entity.isSpectator()) {
+            return;
+        }
+
+        List<Block> nearbyBlocks = getNearbyBlocks(entity, 2);
+
+        if (entity instanceof ServerPlayer player) {
+            player.awardStat(TOTAL_FLATULENCE_ID);
+        }
+
+        playFlatulenceSound(entity);
+        spawnFlatulenceParticles(entity, nearbyBlocks);
+        applyFlatulenceEffects(entity, nearbyBlocks);
+        causeFlatulenceExplosion(entity);
+    }
+
+    private static void playFlatulenceSound(Entity entity) {
+        float volume = ModRandom.getRandomWithinRange(0F, 0.75F);
+        float pitch = ModRandom.getRandomWithinRange(0F, 2.0F);
+
+        entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                ENTITY_FLATULENCE, SoundSource.MASTER, volume, pitch);
+    }
+
+    private static void spawnFlatulenceParticles(Entity entity, List<Block> nearbyBlocks) {
+        int count = 1;
+        float speed = 0.005F;
+        SimpleParticleType particle = ParticleTypes.CAMPFIRE_COSY_SMOKE;
+
+        if (entity.level().dimension().equals(Level.END)) {
+            count = 32;
+            particle = ParticleTypes.PORTAL;
+        }
+
+        if (isNearFlameSource(nearbyBlocks) || isUltraWarm(entity.level())) {
+            count = 6;
+            if (Flatulenceupdate.CONFIG.chanceForFlammableFlatulence > 0
+                    && ModRandom.hasChance(Flatulenceupdate.CONFIG.chanceForFlammableFlatulence)) {
+                particle = ParticleTypes.FLAME;
+                entity.igniteForSeconds(3);
+            } else {
+                particle = ParticleTypes.SMALL_FLAME;
+            }
+        }
+
+        if (nearbyBlocks.contains(Blocks.SOUL_CAMPFIRE)
+                || nearbyBlocks.contains(Blocks.SOUL_FIRE)
+                || nearbyBlocks.contains(Blocks.SOUL_TORCH)
+                || nearbyBlocks.contains(Blocks.SOUL_WALL_TORCH)) {
+            count = 6;
+            particle = ParticleTypes.SOUL_FIRE_FLAME;
+            if (Flatulenceupdate.CONFIG.chanceForFlammableFlatulence > 0
+                    && ModRandom.hasChance(Flatulenceupdate.CONFIG.chanceForFlammableFlatulence)) {
+                entity.igniteForSeconds(3);
+            }
+        }
+
+        if (entity.isUnderWater()) {
+            count = 9;
+            particle = ParticleTypes.BUBBLE;
+        }
+
+        ServerLevel level = (ServerLevel) entity.level();
+        float yOffset = getHeightAdjustment(entity);
+        level.sendParticles(particle,
+                entity.getX(),
+                entity.getY() + yOffset,
+                entity.getZ(),
+                count,
+                0.1, 0.1, 0.1,
+                speed);
+    }
+
+    private static void applyFlatulenceEffects(Entity entity, List<Block> nearbyBlocks) {
+        if (Flatulenceupdate.CONFIG.chanceForEffect <= 0
+                || !ModRandom.hasChance(Flatulenceupdate.CONFIG.chanceForEffect)) {
+            return;
+        }
+
+        int range = (int) ModRandom.getRandomWithinRange(1, Flatulenceupdate.CONFIG.maxAfflictionRange);
+        int duration = (int) ModRandom.getRandomWithinRange(
+                Flatulenceupdate.CONFIG.minStatusEffectDuration,
+                Flatulenceupdate.CONFIG.maxStatusEffectDuration);
+        int level = (int) ModRandom.getRandomWithinRange(1, Flatulenceupdate.CONFIG.maxStatusEffectLevel);
+        float yOffset = getHeightAdjustment(entity);
+
+        List<Holder<MobEffect>> statusEffects = new ArrayList<>();
+        statusEffects.add(MobEffects.NAUSEA);
+        statusEffects.add(MobEffects.WEAKNESS);
+        statusEffects.add(MobEffects.BLINDNESS);
+        statusEffects.add(MobEffects.HUNGER);
+        statusEffects.add(MobEffects.RESISTANCE);
+        statusEffects.add(MobEffects.ABSORPTION);
+
+        if (Flatulenceupdate.CONFIG.chanceForHarmfulEffect > 0
+                && ModRandom.hasChance(Flatulenceupdate.CONFIG.chanceForHarmfulEffect)) {
+            statusEffects.add(MobEffects.INSTANT_DAMAGE);
+            statusEffects.add(MobEffects.WITHER);
+            statusEffects.add(MobEffects.POISON);
+        }
+
+        Holder<MobEffect> selected = statusEffects.get(ThreadLocalRandom.current().nextInt(statusEffects.size()));
+
+        AreaEffectCloud cloud = new AreaEffectCloud(entity.level(), entity.getX(),
+                entity.getY() + yOffset, entity.getZ());
+        MobEffectInstance instance = new MobEffectInstance(selected,
+                Flatulenceupdate.CONFIG.minStatusEffectDuration, level);
+
+        cloud.addEffect(instance);
+        cloud.setDuration(duration);
+        if (entity instanceof LivingEntity living) {
+            cloud.setOwner(living);
+        }
+        cloud.setRadius(range);
+        cloud.setOnGround(false);
+
+        ParticleOptions cloudParticle = ParticleTypes.CAMPFIRE_COSY_SMOKE;
+        if (entity.isUnderWater()) {
+            cloudParticle = ParticleTypes.BUBBLE;
+            cloud.setRadiusPerTick(0.0075F);
+            cloud.setNoGravity(true);
+        } else if (isNearFlameSource(nearbyBlocks) || isUltraWarm(entity.level())) {
+            cloudParticle = ParticleTypes.SMALL_FLAME;
+            cloud.setNoGravity(true);
+        } else if (!entity.level().dimensionType().hasCeiling()
+                && !bedsWork(entity.level())) {
+            cloudParticle = ParticleTypes.PORTAL;
+            cloud.setRadiusPerTick(0.0075F);
+            cloud.setNoGravity(false);
+        } else {
+            cloud.setRadiusPerTick(0F);
+            cloud.setNoGravity(false);
+        }
+
+        cloud.setCustomParticle(cloudParticle);
+        entity.level().addFreshEntity(cloud);
+    }
+
+    private static void causeFlatulenceExplosion(Entity entity) {
+        if (Flatulenceupdate.CONFIG.chanceForExplosiveFlatulence <= 0
+                || !ModRandom.hasChance(Flatulenceupdate.CONFIG.chanceForExplosiveFlatulence)) {
+            return;
+        }
+
+        if (entity instanceof ServerPlayer player) {
+            player.awardStat(TOTAL_EXPLOSIVE_FLATULENCE_ID);
+        }
+
+        float power = ModRandom.getRandomWithinRange(
+                Flatulenceupdate.CONFIG.minExplosivePower,
+                Flatulenceupdate.CONFIG.maxExplosivePower);
+
+        Level level = entity.level();
+        Level.ExplosionInteraction interaction = Flatulenceupdate.CONFIG.allowExplosionsToBreakBlocks
+                ? Level.ExplosionInteraction.MOB
+                : Level.ExplosionInteraction.NONE;
+        level.explode(entity, entity.getX(), entity.getY(), entity.getZ(),
+                4.0F * power, interaction);
+    }
+
+    private static float getHeightAdjustment(Entity entity) {
+        return entity.getEyeHeight() * 0.5F;
+    }
+
+    private static boolean isNearFlameSource(List<Block> blocks) {
+        for (Block b : blocks) {
+            if (FLAME_SOURCE_BLOCKS.contains(b)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isUltraWarm(Level level) {
+        return Boolean.TRUE.equals(level.environmentAttributes()
+                .getDimensionValue(EnvironmentAttributes.WATER_EVAPORATES));
+    }
+
+    private static boolean bedsWork(Level level) {
+        return level.environmentAttributes()
+                .getDimensionValue(EnvironmentAttributes.BED_RULE)
+                .canSetSpawn(level);
+    }
+
+    private static List<Block> getNearbyBlocks(Entity entity, int range) {
+        List<Block> result = new ArrayList<>();
+        BlockPos center = entity.blockPosition();
+        Level level = entity.level();
+        for (int dx = -range; dx <= range; dx++) {
+            for (int dy = -range; dy <= range; dy++) {
+                for (int dz = -range; dz <= range; dz++) {
+                    BlockPos pos = center.offset(dx, dy, dz);
+                    result.add(level.getBlockState(pos).getBlock());
+                }
+            }
+        }
+        return result;
+    }
+
+    private static List<LivingEntity> getLivingEntities(ServerLevel level) {
+        List<LivingEntity> list = new ArrayList<>();
+        for (Entity e : level.getAllEntities()) {
+            if (e instanceof LivingEntity living) {
+                list.add(living);
+            }
+        }
+        return list;
+    }
 }

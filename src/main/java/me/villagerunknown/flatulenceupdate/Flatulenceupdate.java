@@ -1,40 +1,23 @@
 package me.villagerunknown.flatulenceupdate;
 
-import me.villagerunknown.flatulenceupdate.feature.addFlatulenceFeature;
-import me.villagerunknown.platform.Platform;
-import me.villagerunknown.platform.PlatformMod;
-import me.villagerunknown.platform.manager.featureManager;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
+import me.villagerunknown.flatulenceupdate.feature.AddFlatulenceFeature;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Flatulenceupdate implements ModInitializer {
-	
-	public static PlatformMod<FlatulenceupdateConfigData> MOD = null;
-	public static String MOD_ID = null;
-	public static Logger LOGGER = null;
-	public static FlatulenceupdateConfigData CONFIG = null;
-	
-	@Override
-	public void onInitialize() {
-		// # Register Mod w/ Platform
-		MOD = Platform.register( "flatulenceupdate", Flatulenceupdate.class, FlatulenceupdateConfigData.class );
-		
-		MOD_ID = MOD.getModId();
-		LOGGER = MOD.getLogger();
-		CONFIG = MOD.getConfig();
-		
-		// # Initialize Mod
-		init();
-	}
-	
-	private static void init() {
-		Platform.init_mod( MOD );
-		
-		// # Activate Features
-		featureManager.addFeature( "addFlatulence", addFlatulenceFeature::execute );
-		
-		// # Load Features
-		featureManager.loadFeatures();
-	}
-	
+
+    public static final String MOD_ID = "villagerunknown-flatulenceupdate";
+    public static final Logger LOGGER = LoggerFactory.getLogger(Flatulenceupdate.class);
+    public static FlatulenceupdateConfigData CONFIG;
+
+    @Override
+    public void onInitialize() {
+        CONFIG = AutoConfig.register(FlatulenceupdateConfigData.class, GsonConfigSerializer::new)
+                .getConfig();
+
+        AddFlatulenceFeature.execute();
+    }
 }
